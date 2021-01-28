@@ -1,22 +1,27 @@
 #include "myls.h";
-#include <experimental/filesystem>;
+
 using namespace std; //I don't really wanna use this but i'm too lazy to not
 namespace fs = std::experimental::filesystem;
 
-bool flag;
+bool flag = false;
 int main(int argc, char* argv[]) {
     if (argv[2] == "-h"){
         bool flag = true;
         if (argc > 2){
-            //list all directories
+            for (int i = 2; i < argv.size() - 1; i++){
+                string dir = fs::current_path();
+                dir.append("/" + argv[i]);
+                opendir(dir);
+                printCurDir(flag);
+            }
         }
         else {
-            
+            printCurDir(flag);
         }
         //we have to use get opt or we can create another method to show hidden files
     }
     else { //Case for no -h flag
-        printCurDir();
+        printCurDir(flag);
     }
     
     return 0;
@@ -26,20 +31,28 @@ int getCurDir(void){
     int name_size;
     string dirName = fs::current_path();
     name_size = dirName.find_last_of("/");
-    cout << dirName.substr(name_size + 1, dirName.size() - 1);
+    cout << dirName.substr(name_size + 1, dirName.size() - 1) << "\n";
     return 0;  
 }
 
 int printCurDir(bool h){
     DIR *in = opendir(".");
     struct dirent *en;
-
-    if (in) {
-        while ((en = readdir(in)) != NULL){
-            if (en -> d_name[0] != '.'){
-                continue;
-            }else {
-                cout << en -> d_name << "\n";
+    getCurDir();
+    if (in){
+        if (h == false){
+            while ((en = readdir(in)) != NULL){
+                if (en -> d_name[0] != '.'){
+                    continue;
+                }
+                else {
+                    cout << en -> d_name << "\n";
+                }
+            }   
+        }
+        else {
+           while ((en = readdir(in)) != NULL){
+               cout << en -> d_name << "\n";
             }
         }
         closedir(in);
