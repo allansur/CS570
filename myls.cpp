@@ -1,6 +1,6 @@
 #include "myls.h";
 
-using namespace std; //I don't really wanna use this but i'm too lazy to not
+using namespace std;
 namespace fs = std::experimental::filesystem;
 
 bool flag = false;
@@ -18,7 +18,7 @@ int main(int argc, char* argv[]) {
         else {
             printCurDir(flag);
         }
-        //we have to use get opt or we can create another method to show hidden files
+        
     }
     else { //Case for no -h flag
         printCurDir(flag);
