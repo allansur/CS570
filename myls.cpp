@@ -11,7 +11,7 @@ int main(int argc, char *argv[]) {
    struct dirent *en;
 
     // check if second argument is -h or not 
-   if(strcmp(argv[1], "-h") ==0 ) {
+   if(strcmp(argv[1], "-h") == 0 ) {
    while((opt = getopt(argc, argv, ":h:")) != -1) { //check if -h has args or not
     switch(opt) 
     {
@@ -37,7 +37,12 @@ int main(int argc, char *argv[]) {
       if (dr) {
       cout<< "Directory: " << argv[optind] << "\n";
         while ((en = readdir(dr)) != NULL) {
-            cout<< en->d_name<<"\n"; //print all files
+            if (en->d_name[0] == '.'){
+              continue;
+            }
+            else{
+            cout<< en->d_name<<"\n"; //print all NON-HIDDEN Files
+            }
           }
       closedir(dr); //close directory
       } else {
