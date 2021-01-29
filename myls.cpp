@@ -16,15 +16,25 @@ int main(int argc, char *argv[]) {
     switch(opt) 
     {
       case 'h': 
-        dr = opendir(optarg); //open directory specified after -h
-        if (dr) {
-        cout<< "Directory: " << optarg << "\n";
-        while ((en = readdir(dr)) != NULL) {
-             cout<< en->d_name<<"\n"; //print all files
-        }
+        if (argc > 2){
+
+          for (; optind  + 1< argc; optind++){
+
+          dr = opendir(argv[optind]); //open directory specified after -h
+          if (dr) {
+
+            cout<< "Directory: " << optarg << "\n";
+            while ((en = readdir(dr)) != NULL) {
+
+              cout<< en->d_name<<"\n"; //print all files
+            }
         closedir(dr); //close directory
-        } else {
+          } 
+        else {
+
          cout << "Directory " << optarg << " not found\n";
+        }
+          }
         }
         break;
       default: // no args after -h
@@ -33,7 +43,8 @@ int main(int argc, char *argv[]) {
      }
    }
    } else {
-      dr = opendir(argv[optind]); //open directory specified
+     for(; optind < argc; optind++){ //WORKING iterates through listed non-hidden directories
+      dr = opendir(argv[optind]); 
       if (dr) {
       cout<< "Directory: " << argv[optind] << "\n";
         while ((en = readdir(dr)) != NULL) {
@@ -41,13 +52,14 @@ int main(int argc, char *argv[]) {
               continue;
             }
             else{
-            cout<< en->d_name<<"\n"; //print all NON-HIDDEN Files
+            cout<< en->d_name<<"\n";
             }
           }
-      closedir(dr); //close directory
-      } else {
+      closedir(dr); //close dir
+      } else { //error case: NOT FOUND
          cout << "Directory " << argv[optind] << " not found\n";
       }
+   }
    }
 
     return 0;
