@@ -3,50 +3,50 @@
 #include <unistd.h>
 #include <iostream>
 #include <string.h>
+#include <unistd.h>
 
 using namespace std;
+
+string get_cur_dir(){
+  char buff[256];
+  getcwd(buff, 256);
+  string curwdir(buff);
+  curwdir = curwdir.substr(curwdir.find_last_of("/") + 1, curwdir.size() - 1);
+  return curwdir;
+}
+
 int main(int argc, char *argv[]) {
    int opt;
    DIR *dr;
    struct dirent *en;
 
-    // check if second argument is -h or not 
+    // check if second argument is -h or not
+  if (argc > 2){
    if(strcmp(argv[1], "-h") == 0 ) {
-   while((opt = getopt(argc, argv, ":h:")) != -1) { //check if -h has args or not
-    switch(opt) 
-    {
-      case 'h': 
-        if (argc > 2){
-
-          for (; optind  + 1< argc; optind++){
-
-          dr = opendir(argv[optind]); //open directory specified after -h
-          if (dr) {
-
-            cout<< "Directory: " << optarg << "\n";
-            while ((en = readdir(dr)) != NULL) {
-
-              cout<< en->d_name<<"\n"; //print all files
-            }
-        closedir(dr); //close directory
-          } 
-        else {
-
-         cout << "Directory " << optarg << " not found\n";
+   for(; optind < argc; optind++){ //WORKING iterates through listed non-hidden directories
+    if (strcmp(argv[optind], "-h") == 0){
+      continue;
+    }
+    else {
+      dr = opendir(argv[optind]); 
+      if (dr) {
+      cout<< "\nDirectory: " << argv[optind] << "\n";
+        while ((en = readdir(dr)) != NULL) {
+            cout<< en->d_name<<"\n";
+            
         }
-          }
-        }
-        break;
-      default: // no args after -h
-        cout << "Directory " << optarg << " not found";
-        break;
-     }
+      closedir(dr); //close dir
+      } else { //error case: NOT FOUND
+         cout << "\nDirectory " << argv[optind] << " not found\n";
+      }
+    }
    }
-   } else {
+   }
+   else {
      for(; optind < argc; optind++){ //WORKING iterates through listed non-hidden directories
       dr = opendir(argv[optind]); 
       if (dr) {
-      cout<< "Directory: " << argv[optind] << "\n";
+      cout<< "\nDirectory: " << argv[optind] << "\n";
         while ((en = readdir(dr)) != NULL) {
             if (en->d_name[0] == '.'){
               continue;
@@ -57,10 +57,40 @@ int main(int argc, char *argv[]) {
           }
       closedir(dr); //close dir
       } else { //error case: NOT FOUND
-         cout << "Directory " << argv[optind] << " not found\n";
+         cout << "\nDirectory: " << argv[optind] << " not found\n";
       }
    }
    }
-
+  }
+  else {
+    if (argc > 1){
+      dr = opendir("."); 
+      if (dr) {
+      cout<< "\nDirectory: " << get_cur_dir() << "\n";
+        while ((en = readdir(dr)) != NULL) {
+            cout<< en->d_name<<"\n";
+        }
+      closedir(dr); //close dir
+    }
+    }
+    else {
+      dr = opendir("."); 
+      if (dr) {
+      cout<< "\nDirectory: " << get_cur_dir() << "\n";
+        while ((en = readdir(dr)) != NULL) {
+          if (en->d_name[0] == '.'){
+            continue;
+          }
+          else{
+            cout<< en->d_name<<"\n";
+          }
+        }
+      closedir(dr); //close dir
+      } else { //error case: NOT FOUND
+         cout << "Directory " << argv[optind] << " not found\n";
+      }
+    }
+  }
+  
     return 0;
 }
