@@ -1,5 +1,6 @@
-//myls.h
-#include <string>
+#include <stdio.h>
+#include <dirent.h>
+#include <unistd.h>
 #include <iostream>
-#include <sys/types.h>
-#include "dirent.h"
+#include <string.h>
+#include <unistd.h>
