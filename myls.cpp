@@ -1,69 +1,112 @@
-#include "myls.h";
+#include <stdio.h>
+#include <dirent.h>
+#include <unistd.h>
+#include <iostream>
+#include <string.h>
+#include <unistd.h>
 
 using namespace std;
-namespace fs = std::experimental::filesystem;
 
-bool flag = false;
-int main(int argc, char* argv[]) {
-    if (argv[2] == "-h"){
-        bool flag = true;
-        if (argc > 2){
-            for (int i = 2; i < argv.size() - 1; i++){
-                string dir = fs::current_path();
-                dir.append("/" + argv[i]);
-                opendir(dir);
-                printCurDir(flag);
-            }
-        }
-        else {
-            printCurDir(flag);
-        }
-        
-    }
-    else { //Case for no -h flag
-        printCurDir(flag);
-    }
-    
-    return 0;
+string get_cur_dir(){
+  char buff[256];
+  getcwd(buff, 256);
+  string curwdir(buff);
+  curwdir = curwdir.substr(curwdir.find_last_of("/") + 1, curwdir.size() - 1);
+  return curwdir;
 }
 
-int getCurDir(void){
-    int name_size;
-    string dirName = fs::current_path();
-    name_size = dirName.find_last_of("/");
-    cout << dirName.substr(name_size + 1, dirName.size() - 1) << "\n";
-    return 0;  
-}
+int main(int argc, char *argv[]) {
+   int opt;
+   DIR *dr;
+   struct dirent *en;
 
-int printCurDir(bool h){
-    DIR *in = opendir(".");
-    struct dirent *en;
-    getCurDir();
-    if (in){
-        if (h == false){
-            while ((en = readdir(in)) != NULL){
-                if (en -> d_name[0] != '.'){
-                    continue;
-                }
-                else {
-                    cout << en -> d_name << "\n";
-                }
-            }   
-        }
-        else {
-           while ((en = readdir(in)) != NULL){
-               cout << en -> d_name << "\n";
-            }
-        }
-        closedir(in);
+    // check if second argument is -h or not
+  if (argc > 2){
+   if(strcmp(argv[1], "-h") == 0 ) {
+   for(; optind < argc; optind++){ //WORKING iterates through listed non-hidden directories
+    if (strcmp(argv[optind], "-h") == 0){
+      continue;
     }
     else {
-        cout << "Cannot access " << getCurDir << "\n";
+      dr = opendir(argv[optind]); 
+      if (dr) {
+      cout<< argv[optind] << "\n";
+        while ((en = readdir(dr)) != NULL) {
+            cout<< en->d_name<<"\n";
+            
+        }
+      closedir(dr); //close dir
+      } else { //error case: NOT FOUND
+         cout << "Cannot access " << argv[optind] << "\n";
+      }
     }
+   }
+   }
+   else {
+     for(; optind < argc; optind++){ //WORKING iterates through listed non-hidden directories
+      dr = opendir(argv[optind]); 
+      if (dr) {
+      cout<< argv[optind] << "\n";
+        while ((en = readdir(dr)) != NULL) {
+            if (en->d_name[0] == '.'){
+              continue;
+            }
+            else{
+            cout<< en->d_name<<"\n";
+            }
+          }
+      closedir(dr); //close dir
+      } else { //error case: NOT FOUND
+         cout << "Cannot access " << argv[optind] << "\n";
+      }
+   }
+   }
+  }
+  else {
+    if (argc > 2){
+      dr = opendir("."); 
+      if (dr) {
+      cout<< get_cur_dir() << "\n";
+        while ((en = readdir(dr)) != NULL) {
+            cout<< en->d_name<<"\n";
+        }
+      closedir(dr); //close dir
+    }
+    }
+    else {
+      if(argc == 1 || strcmp(argv[1], "-h")==0){
+      dr = opendir("."); 
+      if (dr) {
+      cout<< get_cur_dir() << "\n";
+        while ((en = readdir(dr)) != NULL) {
+          if (en->d_name[0] == '.'){
+            continue;
+          }
+          else{
+            cout<< en->d_name<<"\n";
+          }
+        }
+      closedir(dr); //close dir
+      }
+      } else { //error case: NOT FOUND
+        dr = opendir(argv[1]); 
+      if (dr) {
+      cout<< argv[1] << "\n";
+        while ((en = readdir(dr)) != NULL) {
+            if (en->d_name[0] == '.'){
+              continue;
+            }
+            else{
+            cout<< en->d_name<<"\n";
+            }
+          }
+      closedir(dr); //close dir
+      } else { //error case: NOT FOUND
+         cout << "Cannot access: " << argv[1] << "\n";
+      }
+      }
+    }
+  }
+  
     return 0;
 }
-
-
-
-
-
