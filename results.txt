@@ -1,0 +1,71 @@
+(no args)
+(base) Jasons-Macbook-Pro:CS570 jason.songvilay$ ./myls
+CS570
+a02
+myls.o
+myls.h
+a03
+Makefile
+myls
+README.md
+myls.cpp
+
+(no args -h)
+(base) Jasons-Macbook-Pro:CS570 jason.songvilay$ ./myls -h
+CS570
+a02
+myls.o
+myls.h
+a03
+Makefile
+myls
+README.md
+myls.cpp
+
+(single arg)
+(base) Jasons-Macbook-Pro:CS570 jason.songvilay$ ./myls a02
+a02
+bar.txt
+
+(single arg not found)
+(base) Jasons-Macbook-Pro:CS570 jason.songvilay$ ./myls a06
+Cannot access: a06
+
+(single arg -h)
+(base) Jasons-Macbook-Pro:CS570 jason.songvilay$ ./myls -h a02
+a02
+.
+..
+bar.txt
+
+(single arg -h not found)
+(base) Jasons-Macbook-Pro:CS570 jason.songvilay$ ./myls -h a06
+Cannot access a06
+
+(double arg)
+(base) Jasons-Macbook-Pro:CS570 jason.songvilay$ ./myls a02 a03
+a02
+bar.txt
+a03
+foo.txt
+
+(double arg -h)
+(base) Jasons-Macbook-Pro:CS570 jason.songvilay$ ./myls -h a02 a03
+a02
+.
+..
+bar.txt
+a03
+.
+..
+foo.txt
+
+(double arg not found)
+(base) Jasons-Macbook-Pro:CS570 jason.songvilay$ ./myls a04 a05
+Cannot access a04
+Cannot access a05
+
+(double arg -h not found)
+(base) Jasons-Macbook-Pro:CS570 jason.songvilay$ ./myls -h a04 a05
+Cannot access a04
+Cannot access a05

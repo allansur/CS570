@@ -30,14 +30,14 @@ int main(int argc, char *argv[]) {
     else {
       dr = opendir(argv[optind]); 
       if (dr) {
-      cout<< "\nDirectory: " << argv[optind] << "\n";
+      cout<< argv[optind] << "\n";
         while ((en = readdir(dr)) != NULL) {
             cout<< en->d_name<<"\n";
             
         }
       closedir(dr); //close dir
       } else { //error case: NOT FOUND
-         cout << "\nDirectory " << argv[optind] << " not found\n";
+         cout << "Cannot access " << argv[optind] << "\n";
       }
     }
    }
@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
      for(; optind < argc; optind++){ //WORKING iterates through listed non-hidden directories
       dr = opendir(argv[optind]); 
       if (dr) {
-      cout<< "\nDirectory: " << argv[optind] << "\n";
+      cout<< argv[optind] << "\n";
         while ((en = readdir(dr)) != NULL) {
             if (en->d_name[0] == '.'){
               continue;
@@ -57,16 +57,16 @@ int main(int argc, char *argv[]) {
           }
       closedir(dr); //close dir
       } else { //error case: NOT FOUND
-         cout << "\nDirectory: " << argv[optind] << " not found\n";
+         cout << "Cannot access " << argv[optind] << "\n";
       }
    }
    }
   }
   else {
-    if (argc > 1){
+    if (argc > 2){
       dr = opendir("."); 
       if (dr) {
-      cout<< "\nDirectory: " << get_cur_dir() << "\n";
+      cout<< get_cur_dir() << "\n";
         while ((en = readdir(dr)) != NULL) {
             cout<< en->d_name<<"\n";
         }
@@ -74,9 +74,10 @@ int main(int argc, char *argv[]) {
     }
     }
     else {
+      if(argc == 1 || strcmp(argv[1], "-h")==0){
       dr = opendir("."); 
       if (dr) {
-      cout<< "\nDirectory: " << get_cur_dir() << "\n";
+      cout<< get_cur_dir() << "\n";
         while ((en = readdir(dr)) != NULL) {
           if (en->d_name[0] == '.'){
             continue;
@@ -86,8 +87,23 @@ int main(int argc, char *argv[]) {
           }
         }
       closedir(dr); //close dir
+      }
       } else { //error case: NOT FOUND
-         cout << "Directory " << argv[optind] << " not found\n";
+        dr = opendir(argv[1]); 
+      if (dr) {
+      cout<< argv[1] << "\n";
+        while ((en = readdir(dr)) != NULL) {
+            if (en->d_name[0] == '.'){
+              continue;
+            }
+            else{
+            cout<< en->d_name<<"\n";
+            }
+          }
+      closedir(dr); //close dir
+      } else { //error case: NOT FOUND
+         cout << "Cannot access: " << argv[1] << "\n";
+      }
       }
     }
   }
