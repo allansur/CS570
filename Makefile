@@ -1,22 +1,18 @@
-# CXX Make variable for compiler
+# Names: Allan Sur, Jason Songvilay
+# RedIDs: 821444631, 821071661
+# Course: CS530-03-Spring2021
+# Assignmt 1: Part II
+
+
 CXX=g++
-# Make variable for compiler options
-#	-std=c++11  C/C++ variant to use, e.g. C++ 2011
-#	-g          include information for symbolic debugger e.g. gdb 
+
 CXXFLAGS=-std=c++11 -g
 
-# Rules format:
-# target : dependency1 dependency2 ... dependencyN
-#     Command to make target, uses default rules if not specified
-
-# First target is the one executed if you just type make
-# make target specifies a specific target
-# $^ is an example of a special variable.  It substitutes all dependencies
 myls : myls.o 
 	$(CXX) $(CXXFLAGS) -o myls $^
 
 myls.o : myls.h myls.cpp
 
 clean :
-	rm *.o
+	rm *.o myls
 
