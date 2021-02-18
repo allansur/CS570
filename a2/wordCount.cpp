@@ -3,6 +3,7 @@
 #include <string>
 
 using namespace std;
+
 typedef struct {
     long *CurrentStatus;
     long InitialValue;
@@ -12,7 +13,10 @@ typedef struct {
 int main(int argc, char **argv){
     PROGRESS_STATUS ps;
     ps = {0, 0, 0};
+    //Do all thread stuff
 
+    wordCount(filename);
+    //Get file bit count by using fstat
 
 
 
@@ -23,9 +27,11 @@ int main(int argc, char **argv){
 
 int wordCount(string filename){
     int wc = 0;
+    //Open the file here
     //File is opened, words are counted based on whitespace
     //return word count
     return wc;
+
 }
 
 void * progress_monitor(void *) {
