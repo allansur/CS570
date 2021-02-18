@@ -15,6 +15,11 @@ typedef struct {
 
 long wordCount(string filename){
     int wc = 0;
+    ofstream myfile;
+    myfile.open(filename);
+    
+
+    myfile.close();
     //Open the file here
     //File is opened, words are counted based on whitespace
     //return word count
