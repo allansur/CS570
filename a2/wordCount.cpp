@@ -14,14 +14,20 @@ typedef struct {
 
 int main(int argc, char **argv){
     string filename;
-    if (argc < 2) {
-        cout << "No file was input, proper usage: ./wordcount 'filename' " << endl;
-        exit(1);
+    if (argc < 2 || argc > 2) {
+        if (argc < 2) {
+            cout << "No file was input, proper usage: ./wordcount 'filename'" << endl;
+            exit(1);
+        }
+        else {
+            cout << "Too many arguments were passed, proper usage: ./wordcount 'filename'" << endl;
+            exit(1);
+        }
     }
     else if (argc == 2){
-        
         filename = argv[2];
         if (argv.subtr(argv[2].find_last_of("."),argv[2].length() -1) == ".txt"){
+
             filename = argv[2];
             wordCount(filename);
         }
