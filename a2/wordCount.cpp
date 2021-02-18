@@ -17,7 +17,7 @@ long wordCount(string filename){
     int wc = 0;
     ofstream myfile;
     myfile.open(filename);
-    
+
 
     myfile.close();
     //Open the file here
@@ -45,7 +45,7 @@ int main(int argc, char **argv){
         }
     }
     else if (argc == 2){
-        filename = argv[2];
+        filename = argv[1];
         int found = filename.find_last_of(".");
         if (filename.substr(found, filename.length() - 1) == ".txt"){
             wordCount(filename);
