@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <pthread.h>
 #include <string>
+#include <iostream>
+#include <fstream>
 
 using namespace std;
 
