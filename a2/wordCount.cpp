@@ -48,7 +48,7 @@ long wordcount(string filename){
     // not a space, then a word has been found, increment word count
     char ptr;
     char prevPtr;
-    while(myfile.get(ptr) != 0){
+    while(myfile.get(ptr)){
         if(isspace(ptr) && !isspace(prevPtr)){
             wc++;
         }
