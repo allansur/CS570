@@ -1,3 +1,11 @@
+/* 
+Names: Allan Sur, Jason Songvilay
+RedIDs: 821444631, 821071661
+Edoras IDs: cssc3455, cssc3454
+Course: CS530-03-Spring2021
+Assignmt 2: Part II
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
@@ -21,7 +29,7 @@ void * progress_monitor(void *) {
 
 }
 
-long wordcount(string filename){
+long wordcount(string filename) {
     // initialize count, struct to hold amount of bytes, and open file
     int wc = 0;
     struct stat stats;
@@ -70,7 +78,7 @@ long wordcount(string filename){
 
 }
 
-int main(int argc, char **argv){
+int main(int argc, char **argv) {
     string filename;
     if (argc < 2 || argc > 2) {
         if (argc < 2) {
