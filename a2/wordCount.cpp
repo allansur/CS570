@@ -15,8 +15,12 @@ Assignmt 2: Part II
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <sstream>
 
 using namespace std;
+
+
+extern "C" void * progress_monitor(void* parameter);
 
 typedef struct {
     long *CurrentStatus;
@@ -24,14 +28,39 @@ typedef struct {
     long TerminationValue;
 } PROGRESS_STATUS;
 
-void * progress_monitor(void *) {
-    //Read progress in bytes
+void* progress_monitor(void* parameter) {
+    PROGRESS_STATUS *stuff = (PROGRESS_STATUS *) parameter;
+    int count = 0;
+    long pDiff = 0;
+    int holder = 0;
+   
+   // while there are less than 50 characters on the screen
+    while(count < 50) { 
+        // percent = (*CurrentStatus - InitialValue) / TerminationValue
+        pDiff = ((*stuff->CurrentStatus)-(stuff->InitialValue)) / (stuff->TerminationValue);
+        // amount of characters = percent * 50
+        holder = (int) (pDiff * 50);
 
+        // while current progress not printed yet
+        while(count < holder) {
+            if(count != 0 && (count+1) % 10 == 0) { 
+                cout << "+" << flush; // + for every "count = 9+1 = 10th" character
+            } else { 
+                cout << "-" << flush; // - for everything else
+            }
+            count++;
+            usleep(5000);   // delay printing?
+        }
+    }
+    pthread_exit(0);
+    return NULL;
 }
+
 
 long wordcount(string filename) {
     // initialize count, struct to hold amount of bytes, and open file
     int wc = 0;
+    long index = 0;
     struct stat stats;
     char const* charFileName = filename.c_str();
     ifstream myfile;
@@ -40,20 +69,17 @@ long wordcount(string filename) {
     // allocate memory for PROGRESS_STATUS struct and calculate total bytes
     // AKA total characters
     // initialize PROGRESS_STATUS struct values
-    PROGRESS_STATUS *prog_stat = (PROGRESS_STATUS*) malloc(sizeof(prog_stat)); 
-    prog_stat->InitialValue = 0;
-    prog_stat->CurrentStatus = 0;
+    PROGRESS_STATUS prog_stat = *(PROGRESS_STATUS*) malloc(sizeof(prog_stat)); 
+    prog_stat.InitialValue = 0;
+    prog_stat.CurrentStatus = &index;
     stat(charFileName, &stats);
-    prog_stat->TerminationValue = stats.st_size;
-    cout << "bytes: " << prog_stat->TerminationValue << "\n";
+    prog_stat.TerminationValue = stats.st_size;
+    //cout << "bytes: " << prog_stat.TerminationValue << "\n";
 
     // create threads for progress_monitor
     pthread_t mainThread;
-    pthread_create(&mainThread, NULL, progress_monitor, (void *)prog_stat);
-
-    // start pointer to read file character by character until false
-    // if the current character is a space and the previous character is
-    // not a space, then a word has been found, increment word count
+    pthread_create(&mainThread, NULL, progress_monitor, (void *) &prog_stat);
+  
     char ptr;
     char prevPtr;
     while(myfile.get(ptr)){
@@ -61,17 +87,17 @@ long wordcount(string filename) {
             wc++;
         }
         prevPtr = ptr;
-        prog_stat->CurrentStatus++;
+        (*prog_stat.CurrentStatus)++;
     }
- 
-    // join main thread for progress bar progress
-    pthread_join(mainThread, NULL);
 
     // close file
     myfile.close();
 
+    // join main thread for progress bar progress
+    pthread_join(mainThread, NULL);
+
     // display word count in opened file
-    cout << "There are " << wc << " words in " << filename << ".\n";
+    cout << endl << "\nThere are " << wc << " words in " << filename << ".\n";
 
     //return word count
     return wc;
@@ -95,6 +121,7 @@ int main(int argc, char **argv) {
         int found = filename.find_last_of(".");
         if (filename.substr(found, filename.length() - 1) == ".txt"){
             wordcount(filename);
+            
         }
         
 

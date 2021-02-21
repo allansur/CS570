@@ -6,7 +6,7 @@
 
 CXX=g++
 
-CXXFLAGS=-std=c++11 -g
+CXXFLAGS=-std=c++11 -g -pthread
 
 wordcount : wordcount.o 
 	$(CXX) $(CXXFLAGS) -o wordcount $^
