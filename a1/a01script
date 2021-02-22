@@ -1,0 +1,16 @@
+#!/bin/tcsh
+#
+# $from - location of assignment in class accounts
+# $copy - directory to copy assignment files into
+
+set from="a1"
+set copy="/home/cs/faculty/bshen/cs570/s_a1"
+mkdir $copy
+
+# location of Professor Shen's class accounts
+cd /home/cs/bshen
+
+foreach i ( cssc35* )
+echo "Copying " $i
+echo "tar cf - $i/$from" | /usr/local/bin/sg $i | (cd $copy; tar xvf - )
+end
