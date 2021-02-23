@@ -18,6 +18,8 @@ Assignmt 2: Part II
 
 using namespace std;
 
+extern "C" void * progress_monitor(void *parameter)
+
 typedef struct
 {
     long *CurrentStatus;
