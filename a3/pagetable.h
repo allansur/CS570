@@ -8,8 +8,11 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <map>
-
-
-
 using namespace std;
-void LogicalToPage(unsigned int LogicalAddress, unsigned int Mask, unsigned int Shift);
+
+class PageTable
+{
+unsigned int LogicalToPage(unsigned int LogicalAddress, unsigned int Mask, unsigned int Shift);
+// void PageInsert(PAGETABLE *PageTable, unsigned int LogicalAddress, unsigned int Frame);
+// MAP * PageLookup(PAGETABLE *PageTable, unsigned int LogicalAddress);
+};
