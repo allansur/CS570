@@ -1,0 +1,10 @@
+./myls
+./myls -h
+./myls a02
+./myls a06
+./myls -h a02
+./myls -h a06
+./myls a02 a03
+./myls -h a02 a03
+./myls a04 a05
+./myls -h a04 a05
