@@ -15,7 +15,7 @@ typedef struct LEVEL
 {
     int depthOfLevel;
     PAGETABLE *pageTable;
-    LEVEL **NextLevelPtr;
+    LEVEL *NextLevelPtr;
     
 };
 
@@ -29,9 +29,9 @@ typedef struct PAGETABLE
 {
     unsigned int numBitsAddy;
     int numOfLevels;
-    vector<int> numberOfBits; //size = numOfLevels
-    vector<int> bitMask; //size = numOfLevels
-    vector<int> shifters();
-    vector<int> entryCount(); // size = level
+    int numberOfBits[numOfLevels] = {}; //size = numOfLevels
+    int bitMask[] = {numOfLevels}; //size = numOfLevels
+    int shifters[] = {};
+    int entryCount[LEVEL] = {}; // size = level
     int *rootPtr;
 };
