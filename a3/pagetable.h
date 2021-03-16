@@ -29,9 +29,10 @@ typedef struct PAGETABLE
 {
     unsigned int numBitsAddy;
     int numOfLevels;
-    int numberOfBits[numOfLevels] = {}; //size = numOfLevels
-    int bitMask[] = {numOfLevels}; //size = numOfLevels
+    int numberOfBits; //size = numOfLevels
+    int bitMask[numOfLevels] = {}; //size = numOfLevels
     int shifters[] = {};
     int entryCount[LEVEL] = {}; // size = level
     int *rootPtr;
 };
+
