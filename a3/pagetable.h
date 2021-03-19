@@ -12,20 +12,20 @@ using namespace std;
 
 class PageTable
 {
-unsigned int LogicalToPage(unsigned int LogicalAddress, unsigned int Mask, unsigned int Shift);
-// void PageInsert(PAGETABLE *PageTable, unsigned int LogicalAddress, unsigned int Frame);
-// MAP * PageLookup(PAGETABLE *PageTable, unsigned int LogicalAddress);
+    unsigned int LogicalToPage(unsigned int LogicalAddress, unsigned int Mask, unsigned int Shift);
+    void PageInsert(PAGETABLE *PageTable, unsigned int LogicalAddress, unsigned int Frame);
+    MAP *PageLookup(PAGETABLE *PageTable, unsigned int LogicalAddress);
 };
 
-typedef struct 
+typedef struct
 {
     void *pageTablePtr;
     int depth;
     void **nextLevelPtr;
-    
+
 } LEVEL;
 
-typedef struct 
+typedef struct
 {
     bool flagIndex;
     int frameIndex;
@@ -36,9 +36,8 @@ typedef struct
     // unsigned int numBitsAddy;
     unsigned int numOfLevels;
     unsigned int numberOfBits; //size = numOfLevels
-    unsigned int *bitMaskArr;//size = numOfLevels
+    unsigned int *bitMaskArr;  //size = numOfLevels
     unsigned int *shifters;
     unsigned int *entryCount; // size = level
     void *rootPtr;
 } PAGETABLE;
-
