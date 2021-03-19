@@ -17,28 +17,28 @@ unsigned int LogicalToPage(unsigned int LogicalAddress, unsigned int Mask, unsig
 // MAP * PageLookup(PAGETABLE *PageTable, unsigned int LogicalAddress);
 };
 
-typedef struct LEVEL 
+typedef struct 
 {
-    int depthOfLevel;
-    PAGETABLE *pageTable;
-    LEVEL *NextLevelPtr;
+    void *pageTablePtr;
+    int depth;
+    void **nextLevelPtr;
     
-};
+} LEVEL;
 
-typedef struct MAP 
+typedef struct 
 {
     bool flagIndex;
     int frameIndex;
-};
+} MAP;
 
-typedef struct PAGETABLE
+typedef struct
 {
-    unsigned int numBitsAddy;
-    int numOfLevels;
-    int numberOfBits; //size = numOfLevels
-    int bitMask[0] = {}; //size = numOfLevels
-    int shifters[] = {};
-    int entryCount[0] = {}; // size = level
-    int *rootPtr;
-};
+    // unsigned int numBitsAddy;
+    unsigned int numOfLevels;
+    unsigned int numberOfBits; //size = numOfLevels
+    unsigned int *bitMaskArr;//size = numOfLevels
+    unsigned int *shifters;
+    unsigned int *entryCount; // size = level
+    void *rootPtr;
+} PAGETABLE;
 
