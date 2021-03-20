@@ -2,6 +2,8 @@
 #include "pagetable.h"
 using namespace std;
 
+//All of our methods for the Level class will be include in here. We also have a repeat of the logicalToPage method here but it's not an override as it accomplishes the same thing.
+
 //Create a new instance of a level for the page table
 long int tableSize, bitsUsed;
 Level::Level(int d, PAGETABLE *pgTblPtr)
@@ -30,6 +32,7 @@ Level::Level(int d, PAGETABLE *pgTblPtr)
         tableSize += sizeof(Level) + sizeof(map);
     }
 }
+//just changes logical address to page address for virtual paging by ANDing the logical address and our bitmask and then shifting it x amount per level that it's on
 unsigned int LogicalToPage(unsigned int LogicalAddress, unsigned int Mask, unsigned int Shift)
 {
     return (LogicalAddress & Mask) >> Shift; // We got 1 down!
@@ -38,6 +41,7 @@ unsigned int LogicalToPage(unsigned int LogicalAddress, unsigned int Mask, unsig
 void Level::pageInsert(unsigned int logicalAddy, unsigned int frameIndex) {
     if (isLeaf){
         //store the frame and set the index to valid in the bit map (1) 
+        //If this is already a leaf node, that means we can just set it's flagIndex to 1 to show it's used and set it's frameIndex
         map -> flagIndex = true;
         map -> frameIndex = frameIndex;
         bitsUsed += sizeof(map);
@@ -55,6 +59,3 @@ void Level::pageInsert(unsigned int logicalAddy, unsigned int frameIndex) {
 
     }
 }
-
-
-};
