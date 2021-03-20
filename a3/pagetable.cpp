@@ -1,106 +1,71 @@
 
 #include "pagetable.h"
+#include "map.h"
+#include "level.h"
 using namespace std;
 
-int createPageTable(PAGETABLE *pageTable, unsigned int numOfLevels, int *numOfBits)
-{
-    pageTable->numOfLevels = numOfLevels;
-    pageTable->bitMaskArr = new unsigned int[numOfLevels + 1];
-    pageTable->shifters = new unsigned int[numOfLevels + 1];
-    pageTable->entryCount = new unsigned int[numOfLevels + 1];
-    unsigned int offset = 32;
-    for (int i = 0; i < pageTable->numOfLevels; i++)
-    {
-        offset -= numOfBits[i];
-    }
-    int bitsNeeded;
-    unsigned int totalBits = offset;
-    unsigned int bitMask;
-    //[Level Count] matches with the offset bits
-    pageTable->bitMaskArr[numOfLevels] = (unsigned int)((1 << offset) - 1);
-    pageTable->shifters[numOfLevels] = 0;
-    //Page Size
-    pageTable->entryCount[numOfLevels] = (unsigned int)(1 << offset);
-    for (int i = pageTable->numOfLevels - 1; i >= 0; i--)
-    {
-        bitsNeeded = numOfBits[i];
-        // Equivalent to 2 to the power of bitsForLevel
-        bitMask = (unsigned int)(1 << bitsNeeded) - 1;
-        pageTable->bitMaskArr[i] = bitMask << totalBits;
-        pageTable->shifters[i] = totalBits;
-        pageTable->entryCount[i] = (unsigned int)1 << bitsNeeded;
-        totalBits += bitsNeeded;
-    }
-}
-
-unsigned int LogicalToPage(unsigned int LogicalAddress, unsigned int Mask, unsigned int Shift)
-{
-    return (LogicalAddress & Mask) >> Shift; // We got 1 down!
-}
-
-int PageLookUp(unsigned int address)
-{
-}
-
-unsigned int calcBitmask(int start, int length)
-{
+unsigned int calcBitmask(int start, int length){
     unsigned int mask = (1 << length) - 1;
-    mask <<= (start - length);
+    mask <<= (start-length);
     return mask;
 }
 
-void PageInsert(PAGETABLE *PageTable, unsigned int LogicalAddress, unsigned int Frame)
-{
-    PageInsert((LEVEL *)PageTable->rootPtr, LogicalAddress, Frame);
+unsigned int LogicalToPage(unsigned int LogicalAddress, unsigned int Mask, unsigned int Shift) {
+    return (LogicalAddress & Mask) >> Shift; // We got 1 down!
 }
 
-void PageInsert(LEVEL *LevelPtr, unsigned int LogicalAddress, unsigned int Frame)
-{
-    PAGETABLE *PageTable = (PAGETABLE *)LevelPtr->pageTablePtr;
-    unsigned int index = LevelPtr->depth;
-    unsigned int pageNumber = LogicalToPage(LogicalAddress, PageTable->bitMaskArr[index], PageTable->shifters[index]);
+PAGETABLE::PAGETABLE(unsigned int numOfLevels, int *numOfBits) {
+    PAGETABLE::numOfLevels = numOfLevels;
+    bitmaskArr = new unsigned int[PAGETABLE::numOfLevels + 1];
+    shifters = new unsigned int[PAGETABLE::numOfLevels + 1];
+    entryCount = new unsigned int[PAGETABLE::numOfLevels + 1];
+    rootPtr = nullptr;
 
-    unsigned int leafNode = (PageTable->numOfLevels) - 1;
-    if (index == leafNode)
-    {
-        MAP *map = (MAP *)LevelPtr;
-        map->flagIndex = true;
-        map->frameIndex = index;
+    unsigned int offset = 32;
+    for (int i = 0; i < PAGETABLE::numOfLevels; i++) {
+        offset -= numOfBits[i];
     }
-    else
-    {
-        LEVEL *newLevel;
-        newLevel->depth = LevelPtr->depth + 1;
-        // LevelPtr->nextLevelPtr[index] = initializeLevelArr(LevelPtr->pageTablePtr, LevelPtr, LevelPtr->depth+1);
-        PageInsert((PAGETABLE *)newLevel->pageTablePtr, LogicalAddress, Frame);
+    int bitsForLevel;
+    unsigned int cumulativeBitCount = offset;
+    unsigned int bitMask;
+    //[Level Count] matches with the offset bits
+    bitmaskArr[numOfLevels] = (unsigned int) ((1 << offset) - 1);
+    shifters[numOfLevels] = 0;
+    //Page Size
+    entryCount[numOfLevels] = (unsigned int) (1 << offset);
+    for (int i = PAGETABLE::numOfLevels - 1; i >= 0; i--) {
+        bitsForLevel = numOfBits[i];
+        // Equivalent to 2 to the power of bitsForLevel
+        bitMask = (unsigned int) (1 << bitsForLevel) - 1;
+        bitmaskArr[i] = bitMask << cumulativeBitCount;
+        shifters[i] = cumulativeBitCount;
+        entryCount[i] = (unsigned int) 1 << bitsForLevel;
+        cumulativeBitCount += bitsForLevel;
     }
+};
+
+
+bool PAGETABLE::PageInsert(unsigned int LogicalAddress, unsigned int Frame) {
+    if (rootPtr == nullptr) {
+        rootPtr = new LEVEL(0, 1 == numOfLevels, this);
+    }
+    return rootPtr->PageInsert(LogicalAddress, Frame);
 }
 
-MAP *PageLookup(PAGETABLE *PageTable, unsigned int LogicalAddress)
-{
-    unsigned int index = (PageTable->numOfLevels) - 1;
-    unsigned int pageNum;
-
-    LEVEL *getLevel = (LEVEL *)PageTable->rootPtr;
-    for (int i = 0; i < index; i++)
-    {
-        pageNum = LogicalToPage(LogicalAddress, PageTable->bitMaskArr[i], PageTable->shifters[i]);
-        if (getLevel->nextLevelPtr[index] == NULL)
-        {
-            return NULL;
-        }
-        getLevel = (LEVEL *)getLevel->nextLevelPtr[pageNum];
-    }
-
-    pageNum = LogicalToPage(LogicalAddress, PageTable->bitMaskArr[index], PageTable->shifters[index]);
-    MAP *map = (MAP *)getLevel->nextLevelPtr[pageNum];
-
-    if (map->flagIndex)
-    {
-        return map;
-    }
-    else
-    {
+int PAGETABLE::getFrame(unsigned int LogicalAddress) {
+    if (rootPtr == nullptr) {
         return NULL;
     }
+    return rootPtr->getFrame(LogicalAddress);
+}
+
+int PAGETABLE::sizeTotal() {
+    int pageSize = sizeof(bitmaskArr) + sizeof(shifters);
+    pageSize += sizeof(entryCount);
+    pageSize *= numOfLevels;
+    pageSize += sizeof(numOfLevels) + sizeof(rootPtr);
+    if (rootPtr == nullptr) {
+        return pageSize;
+    }
+    return pageSize + rootPtr->sizeTotal();
 }
