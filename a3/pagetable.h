@@ -24,6 +24,7 @@ private:
     PAGETABLE *pageTablePtr;
     Level **nextLevelPtr;
     bool isLeaf;
+    MAP *map;
 
     typedef struct
     {
