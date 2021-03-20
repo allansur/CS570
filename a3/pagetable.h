@@ -8,31 +8,36 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <map>
-#include <vector>
 using namespace std;
 
-typedef struct LEVEL 
+class PageTable
 {
-    int depthOfLevel;
-    PAGETABLE *pageTable;
-    LEVEL *NextLevelPtr;
-    
+    unsigned int LogicalToPage(unsigned int LogicalAddress, unsigned int Mask, unsigned int Shift);
+    void PageInsert(PAGETABLE *PageTable, unsigned int LogicalAddress, unsigned int Frame);
+    MAP *PageLookup(PAGETABLE *PageTable, unsigned int LogicalAddress);
 };
 
-typedef struct MAP 
+class Level
 {
-    bool flagIndex;
-    int frameIndex;
-};
+private:
+    int depth;
+    PAGETABLE *pageTablePtr;
+    Level **nextLevelPtr;
+    bool isLeaf;
 
-typedef struct PAGETABLE
-{
-    unsigned int numBitsAddy;
-    int numOfLevels;
-    int numberOfBits; //size = numOfLevels
-    int bitMask[numOfLevels] = {}; //size = numOfLevels
-    int shifters[] = {};
-    int entryCount[LEVEL] = {}; // size = level
-    int *rootPtr;
-};
+    typedef struct
+    {
+        bool flagIndex;
+        int frameIndex;
+    } MAP;
 
+    typedef struct
+    {
+        // unsigned int numBitsAddy;
+        unsigned int numOfLevels;
+        unsigned int numberOfBits; //size = numOfLevels
+        unsigned int *bitMaskArr;  //size = numOfLevels
+        unsigned int *shifters;
+        unsigned int *entryCount; // size = level
+        void *rootPtr;
+    } PAGETABLE;
