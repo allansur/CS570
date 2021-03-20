@@ -17,27 +17,27 @@ class PageTable
     MAP *PageLookup(PAGETABLE *PageTable, unsigned int LogicalAddress);
 };
 
-typedef struct
+class Level
 {
-    void *pageTablePtr;
+private:
     int depth;
-    void **nextLevelPtr;
+    PAGETABLE *pageTablePtr;
+    Level **nextLevelPtr;
+    bool isLeaf;
 
-} LEVEL;
+    typedef struct
+    {
+        bool flagIndex;
+        int frameIndex;
+    } MAP;
 
-typedef struct
-{
-    bool flagIndex;
-    int frameIndex;
-} MAP;
-
-typedef struct
-{
-    // unsigned int numBitsAddy;
-    unsigned int numOfLevels;
-    unsigned int numberOfBits; //size = numOfLevels
-    unsigned int *bitMaskArr;  //size = numOfLevels
-    unsigned int *shifters;
-    unsigned int *entryCount; // size = level
-    void *rootPtr;
-} PAGETABLE;
+    typedef struct
+    {
+        // unsigned int numBitsAddy;
+        unsigned int numOfLevels;
+        unsigned int numberOfBits; //size = numOfLevels
+        unsigned int *bitMaskArr;  //size = numOfLevels
+        unsigned int *shifters;
+        unsigned int *entryCount; // size = level
+        void *rootPtr;
+    } PAGETABLE;
