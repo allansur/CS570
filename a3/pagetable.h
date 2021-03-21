@@ -10,7 +10,7 @@
 #include <map>
 using namespace std;
 
-class Level;
+class LEVEL;
 
 class PAGETABLE {
 public:
