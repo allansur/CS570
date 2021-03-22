@@ -1,15 +1,14 @@
-
 #include "pagetable.h"
 using namespace std;
 
-int createPageTable(PAGETABLE *pageTable, unsigned int numOfLevels, int *numOfBits)
+int createPageTable(PAGETABLE *PageTable, unsigned int numOfLevels, int *numOfBits)
 {
-    pageTable->numOfLevels = numOfLevels;
-    pageTable->bitMaskArr = new unsigned int[numOfLevels + 1];
-    pageTable->shifters = new unsigned int[numOfLevels + 1];
-    pageTable->entryCount = new unsigned int[numOfLevels + 1];
+    PageTable->numOfLevels = numOfLevels;
+    PageTable->bitMaskArr = new unsigned int[numOfLevels + 1];
+    PageTable->shifters = new unsigned int[numOfLevels + 1];
+    PageTable->entryCount = new unsigned int[numOfLevels + 1];
     unsigned int offset = 32;
-    for (int i = 0; i < pageTable->numOfLevels; i++)
+    for (int i = 0; i < PageTable->numOfLevels; i++)
     {
         offset -= numOfBits[i];
     }
@@ -17,18 +16,18 @@ int createPageTable(PAGETABLE *pageTable, unsigned int numOfLevels, int *numOfBi
     unsigned int totalBits = offset;
     unsigned int bitMask;
     //[Level Count] matches with the offset bits
-    pageTable->bitMaskArr[numOfLevels] = (unsigned int)((1 << offset) - 1);
-    pageTable->shifters[numOfLevels] = 0;
+    PageTable->bitMaskArr[numOfLevels] = (unsigned int)((1 << offset) - 1);
+    PageTable->shifters[numOfLevels] = 0;
     //Page Size
-    pageTable->entryCount[numOfLevels] = (unsigned int)(1 << offset);
-    for (int i = pageTable->numOfLevels - 1; i >= 0; i--)
+    PageTable->entryCount[numOfLevels] = (unsigned int)(1 << offset);
+    for (int i = PageTable->numOfLevels - 1; i >= 0; i--)
     {
         bitsNeeded = numOfBits[i];
         // Equivalent to 2 to the power of bitsForLevel
         bitMask = (unsigned int)(1 << bitsNeeded) - 1;
-        pageTable->bitMaskArr[i] = bitMask << totalBits;
-        pageTable->shifters[i] = totalBits;
-        pageTable->entryCount[i] = (unsigned int)1 << bitsNeeded;
+        PageTable->bitMaskArr[i] = bitMask << totalBits;
+        PageTable->shifters[i] = totalBits;
+        PageTable->entryCount[i] = (unsigned int)1 << bitsNeeded;
         totalBits += bitsNeeded;
     }
 }
@@ -38,20 +37,10 @@ unsigned int LogicalToPage(unsigned int LogicalAddress, unsigned int Mask, unsig
     return (LogicalAddress & Mask) >> Shift; // We got 1 down!
 }
 
-int PageLookUp(unsigned int address)
-{
-}
-
-unsigned int calcBitmask(int start, int length)
-{
-    unsigned int mask = (1 << length) - 1;
-    mask <<= (start - length);
+unsigned int calcBitmask(int start, int length) {
+    unsigned int mask = (1 << length) - 1; // (2^length) - 1
+    mask <<= (start - length); //shifts the 1's to the correct starting position
     return mask;
-}
-
-void PageInsert(PAGETABLE *PageTable, unsigned int LogicalAddress, unsigned int Frame)
-{
-    PageInsert((LEVEL *)PageTable->rootPtr, LogicalAddress, Frame);
 }
 
 void PageInsert(LEVEL *LevelPtr, unsigned int LogicalAddress, unsigned int Frame)
@@ -75,6 +64,31 @@ void PageInsert(LEVEL *LevelPtr, unsigned int LogicalAddress, unsigned int Frame
         PageInsert((PAGETABLE *)newLevel->pageTablePtr, LogicalAddress, Frame);
     }
 }
+
+void PageInsert(PAGETABLE *PageTable, unsigned int LogicalAddress, unsigned int Frame)
+{
+    PageInsert((LEVEL *)(PageTable->rootPtr), LogicalAddress, Frame);
+}
+
+// MAP *PageLookup(PAGETABLE *PageTable, unsigned int LogicalAddress) {
+//     return PageLookup((LEVEL *)PageTable->rootNode, LogicalAddress);
+// }
+
+// /* searches for a given logical address and returns a pointer to the map struct associated with the address, or NULL if address not found */
+// MAP * PageLookup(LEVEL *level, unsigned int LogicalAddress) {
+//     unsigned int index = LogicalToPage(LogicalAddress, level->PageTable->bitMaskArr[level->depth], level->PageTable->shifters[level->depth]);
+//     if (level->isLeafNode) {        //test if current level is a leaf node
+//         if (level->map[index].isValid)        //test if map[index] is valid
+//             return &level->map[index];
+//         else                        //page has been seen for the first time
+//             return NULL;
+//     }
+//     else {
+//         if (level->nextLevel[index] == NULL)      //interior level at [index] not found, return NULL
+//             return NULL;
+//         return PageLookup((LEVEL*) level->nextLevel[index], LogicalAddress);   //traverse to next level
+//     }
+// }
 
 MAP *PageLookup(PAGETABLE *PageTable, unsigned int LogicalAddress)
 {
@@ -102,5 +116,31 @@ MAP *PageLookup(PAGETABLE *PageTable, unsigned int LogicalAddress)
     else
     {
         return NULL;
+    }
+}
+
+// LEVEL * createLevelArr(PAGETABLE *PageTable, LEVEL *level, int depth) {
+ 
+//     level->depth = depth;
+//     level->isLeafNode = (depth+1 >= PageTable->numOfLevels);
+//     if (level->isLeafNode) {        //allocate maps for leaf nodes
+//         level->map = PageTable->entryCount[depth];
+//         int i;
+//         for (i = 0; i < PageTable->entryCount[depth]; i++) {
+//             level->map[i].flagIndex = false;
+//         }
+//     }
+//     else {          //allocate next level pointers
+//         level->nextLevelPtr = calloc(PageTable->entryCount[depth], sizeof(LEVEL *));
+//     }
+//     return level;
+// }
+
+
+void printTableInfo(PAGETABLE *PageTable) {
+    int i;
+    for (i = 0; i < PageTable->numOfLevels; i++) {
+        printf("LEVEL %i INFO: ", i);
+        printf("Mask: %08X\tShift: %i\tEntry Count: %i\n", PageTable->bitMaskArr[i], PageTable->shifters[i], PageTable->entryCount[i]);
     }
 }
