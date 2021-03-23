@@ -31,7 +31,7 @@ int main(int argc, char **argv)
     //**************************** FOR TESTING PURPOSES ONLY **************************
     // int bits = 20;
 
-    int levelCount = 5;
+    
     // pt->rootPtr = lv;
     // pt->numOfLevels = levelCount;
     // cout << "numOfLevels: " << pt->numOfLevels << "\n";
@@ -70,7 +70,6 @@ int main(int argc, char **argv)
             //optarg will contain the string folliwng -n
             //Process appropriately (e.g. convert to integer atoi(optarg))
             numberOfAddresses = atoi(optarg);
-            cout << "We got #:" << numberOfAddresses;
             nFlag = true;
             break;
         case 'o': /*produce different outputs */
@@ -111,7 +110,6 @@ int main(int argc, char **argv)
     }
 
     string filename = argv[optind];
-    cout << "Do we get here";
     FILE *fp = fopen(filename.c_str(), "r"); 
     p2AddrTr trace_item;  /* Structure with trace information */
   bool done = false;
@@ -125,13 +123,21 @@ int main(int argc, char **argv)
     // Grabs the next address
     int bytesread = NextAddress(fp, &trace_item);
     addys.push_back(trace_item.addr);
-    // Check if we actually got something
-    done = bytesread == 0;
-    if (! done) 
-      cout << trace_item.addr << endl;
   }
-
-cout << addys.size() << endl;
+  
+    int levelCount = argc - (optind + 1);
+    pt -> numOfLevels = levelCount;
+    cout << createPageTable(pt, levelCount) << endl;
+    for (int i = 0; i < addys.size(); i++){
+        PageInsert(pt, addys[i], pt ->frameCount);
+    }
+    cout << PageLookup(pt, addys[69]) << endl;
+    cout << PageLookup(pt, addys[0]) << endl;
+    cout << addys[52] << endl;
+    cout << addys[55] << endl;
+    cout << pt->frameCount;
+    
+    
     return 0;
 }
 

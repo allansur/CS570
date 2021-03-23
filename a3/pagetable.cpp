@@ -79,6 +79,8 @@ MAP *PageLookup(PAGETABLE *PageTable, unsigned int LogicalAddress) {
 /* searches for a given logical address and returns a pointer to the map struct associated with the address, or NULL if address not found */
 MAP * PageLookupHELPER(LEVEL *level, unsigned int LogicalAddress) {
     unsigned int index = LogicalToPage(LogicalAddress, level->pageTablePtr->bitMaskArr[level->depth], level->pageTablePtr->shifters[level->depth]);
+    cout << index << endl;
+    cout << level -> isLeafNode << endl;
     if (level->isLeafNode) {        //test if current level is a leaf node
         if (level->map[index].flagIndex)        //test if map[index] is valid
             return &level->map[index];
@@ -103,8 +105,7 @@ LEVEL *initializeLevel(PAGETABLE *PageTable, LEVEL *level, int depth)
     if (level->isLeafNode)
     { //allocate maps for leaf nodes
         level->map = (MAP *)calloc(PageTable->entryCount[depth], sizeof(MAP));
-        int i;
-        for (i = 0; i < PageTable->entryCount[depth]; i++)
+        for (int i = 0; i < PageTable->entryCount[depth]; i++)
         {
             level->map[i].flagIndex = false;
         }
@@ -116,12 +117,4 @@ LEVEL *initializeLevel(PAGETABLE *PageTable, LEVEL *level, int depth)
     return level;
 }
 
-void printTableInfo(PAGETABLE *PageTable)
-{
-    int i;
-    for (i = 0; i < PageTable->numOfLevels; i++)
-    {
-        printf("LEVEL %i INFO: ", i);
-        printf("Mask: %08X\tShift: %i\tEntry Count: %i\n", PageTable->bitMaskArr[i], PageTable->shifters[i], PageTable->entryCount[i]);
-    }
-}
+
