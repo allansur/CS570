@@ -13,7 +13,6 @@
 #include "byutr.h"
 #include "output_mode_helpers.h"
 #include <vector>
-// extern "C" int NextAddress(FILE, p2AddrTr);
 using namespace std;
 
 int main(int argc, char **argv)
@@ -27,7 +26,7 @@ int main(int argc, char **argv)
     PAGETABLE *pt = new PAGETABLE;
     LEVEL *lv = new LEVEL;
     idx = optind;
-    vector<int> addys;
+    vector<unsigned int> addys;
     bool nFlag = false, bFlag = false, l2PFlag = false, p2FFlag = false, ofFlag = false, rSum = false;
     //**************************** FOR TESTING PURPOSES ONLY **************************
     // int bits = 20;
@@ -62,6 +61,7 @@ int main(int argc, char **argv)
     // cout << pt << "\n";
     // // testing out functions
 //********************************************************************************
+
      while ((Option = getopt(argc, argv, "n:o:")) != -1)
     {
         switch (Option)
@@ -111,8 +111,8 @@ int main(int argc, char **argv)
     }
 
     string filename = argv[optind];
-    FILE *fp;
-     fopen(filename.c_str(), "r"); 
+    cout << "Do we get here";
+    FILE *fp = fopen(filename.c_str(), "r"); 
     p2AddrTr trace_item;  /* Structure with trace information */
   bool done = false;
     if (fp == NULL) { 
@@ -121,16 +121,17 @@ int main(int argc, char **argv)
         exit(1);
     } 
 
-  while (! done) {
+  for (int i = 0; i < numberOfAddresses; i++) {
     // Grabs the next address
     int bytesread = NextAddress(fp, &trace_item);
+    addys.push_back(trace_item.addr);
     // Check if we actually got something
     done = bytesread == 0;
     if (! done) 
-      printf("Address %x\n", trace_item.addr);
+      cout << trace_item.addr << endl;
   }
 
-
+cout << addys.size() << endl;
     return 0;
 }
 
