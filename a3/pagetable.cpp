@@ -1,7 +1,7 @@
 #include "pagetable.h"
 using namespace std;
 
-int createPageTable(PAGETABLE *PageTable, int num, int position)
+int createPageTable(PAGETABLE *PageTable, int num)
 {
     PageTable->shifters = new unsigned int[PageTable -> numOfLevels];
     PageTable->bitMaskArr = new unsigned int[PageTable->numOfLevels];
@@ -17,7 +17,7 @@ int createPageTable(PAGETABLE *PageTable, int num, int position)
         PageTable->bitMaskArr[i] = calcBitmask(maskStart, levelBits);
         PageTable->entryCount[i] = (1 << levelBits); //2 ^ levelBits
         bitsUsed += levelBits;
-        position++;
+   
         if (bitsUsed >= 32)
         {
             fprintf(stderr, "Logical address length is too long. Max: 32 bits\n");
