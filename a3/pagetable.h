@@ -69,5 +69,5 @@ void PageInsert(PAGETABLE *PageTable, unsigned int LogicalAddress, unsigned int 
 void PageInsertHELPER(LEVEL *LevelPtr, unsigned int LogicalAddress, unsigned int Frame);
 MAP *PageLookup(PAGETABLE *PageTable, unsigned int LogicalAddress);
 MAP *PageLookupHELPER(LEVEL *level, unsigned int LogicalAddress);
-int createPageTable(PAGETABLE *PageTable, int num, int position);
+int createPageTable(PAGETABLE *PageTable, int num);
 LEVEL * initializeLevel(PAGETABLE *PageTable, LEVEL *level, int depth);

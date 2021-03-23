@@ -4,16 +4,39 @@
 # Course: CS530-03-Spring2021
 # Assignmt 2: Part II
 
-CXX=g++
 
-CXXFLAGS=-std=c++11 -g
+g++-std=c++11
+main:
+	g++ -std=c++11 -c pagetable.cpp byu_tracereader.c output_mode_helpers.c
+	g++ -o pagetable pagetable.o byu_tracereader.o output_mode_helpers.o
 
-pagetable : main.cpp pagetable.o byu_tracereader.o
-	$(CXX) $(CXXFLAGS) -o pagetable $^
+clean:
+	rm *.o
 
-pagetable.o : pagetable.h pagetable.cpp
 
-byu_tracereader.o : byutr.h byu_tracereader.c
 
-clean :
-	rm *.o pagetable
+
+
+
+
+
+
+
+
+
+
+
+
+# CXX=g++
+
+# CXXFLAGS=-std=c++11 -g
+
+# pagetable : main.cpp pagetable.o byu_tracereader.o
+# 	$(CXX) $(CXXFLAGS) -o pagetable $^
+
+# pagetable.o : pagetable.h pagetable.cpp
+
+# byu_tracereader.o : byutr.h byu_tracereader.c
+
+# clean :
+# 	rm *.o pagetable
