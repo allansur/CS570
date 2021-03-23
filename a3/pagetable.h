@@ -66,5 +66,8 @@ typedef struct LEVEL {      //interior level structure
 unsigned int LogicalToPage(unsigned int LogicalAddress, unsigned int Mask, unsigned int Shift);
 unsigned int calcBitmask(int start, int length);
 void PageInsert(PAGETABLE *PageTable, unsigned int LogicalAddress, unsigned int Frame);
+void PageInsertHELPER(LEVEL *LevelPtr, unsigned int LogicalAddress, unsigned int Frame);
 MAP *PageLookup(PAGETABLE *PageTable, unsigned int LogicalAddress);
-int createPageTable(PAGETABLE *PageTable, unsigned int numOfLevels, int *numOfBits);
+MAP *PageLookupHELPER(LEVEL *level, unsigned int LogicalAddress);
+int createPageTable(PAGETABLE *PageTable, int num, int position);
+LEVEL * initializeLevel(PAGETABLE *PageTable, LEVEL *level, int depth);
