@@ -75,6 +75,7 @@ int main(int argc, char **argv)
         case 'o': /*produce different outputs */
             //optarg contains the output method...
             outputMode = optarg;
+            cout << "mode: " << outputMode << endl;
             if (strcmp(outputMode, "bitmasks") == 0)
             {
                 // report_bitmasks(levelCount, masks);
@@ -102,13 +103,16 @@ int main(int argc, char **argv)
                 // unsigned int bytes);
                 rSum = true;
                 }
+            break;
         default:
             //print something about the usage and die...
-            cout << "Does not exist";
-            exit(1);
-    
+            cout << "Does not exist" << endl;
+            exit(0);
+            break;
         }
     }
+    
+    // cout << "bFlag: " << bFlag << endl;
 
     string filename = argv[optind];
     FILE *fp = fopen(filename.c_str(), "r"); 
@@ -151,16 +155,27 @@ int main(int argc, char **argv)
                     translation &= ((1 - offset) - 1);
                     translation += (map -> frameIndex << offset);
                     cout << "Address: " << addy << ", Physical Translation: " << translation << endl;
-                 
-                }
+                } 
              }
              addyCount++;
-             
          }
     }
     if (p2FFlag) {
         //We have to output the page 2 frames here with page # and frame #
-    }
+        //  printf("%08X: ", logical_addr);
+        // for (int idx=0; idx < pt->numOfLevels; idx++) {   /* output pages */
+        //  printf("%X ", pages[idx]);
+        //     }
+        //  printf("-> %X\n", frame); /* output frame */
+    } else if(bFlag) {
+        // cout << "Bitmask Arr: " << pt->bitMaskArr[11] << endl;
+        //report_bitmasks(pt->numOfLevels, pt->bitMaskArr);
+        for (int idx=0; idx < pt->numOfLevels; idx++) {
+        /* show mask entry and move to next */
+         printf("level %d mask %08X\n", idx, pt->bitMaskArr[idx]);
+        }
+    } 
+  
 
 //CALCULATE ALL ACCURACIES AND OUTPUT
  fclose(fp);
@@ -168,3 +183,4 @@ int main(int argc, char **argv)
 }
 
 // ./pagetable -n 10000 trace.sample.tr 8 7 4
+// ./pagetable -n 10000 -o bitmasks trace.sample.tr 8 7 4
