@@ -10,64 +10,35 @@
 #include <map>
 using namespace std;
 
-// typedef struct
-// {
-//     bool isLeafNode;
-//     void *pageTablePtr;
-//     int depth;
-//     void **nextLevelPtr;
-//     struct PAGETABLE *PageTable;
-//     struct LEVEL **nextLevel;
-//     struct MAP *map;
-
-// } LEVEL;
-
-// typedef struct
-// {
-//     bool flagIndex;
-//     int frameIndex;
-// } MAP;
-
-// typedef struct
-// {
-//     struct LEVEL *rootPtr;
-//     unsigned int numOfLevels;
-//     unsigned int numberOfBits; //size = numOfLevels
-//     unsigned int *bitMaskArr;  //size = numOfLevels
-//     unsigned int *shifters;
-//     unsigned int *entryCount; // size = level
-//     void *rootPtr;
-// } PAGETABLE;
-
 typedef struct PAGETABLE {
     struct LEVEL *rootPtr;
+    unsigned int *bitMaskArr;
+    unsigned int *shifters;
+    unsigned int *entryCount;
     int numOfLevels;
     int frameCount;
     int hits;
     int misses;
-    unsigned int *bitMaskArr;
-    unsigned int *shifters;
-    unsigned int *entryCount;
 } PAGETABLE;
 
-typedef struct MAP {        //leaf node structre
+typedef struct LEVEL {     
+    struct PAGETABLE *pageTablePtr;
+    struct LEVEL **nextLevelPtr;
+    struct MAP *map;
+    bool isLeafNode;
+    int depth;
+} LEVEL;
+
+typedef struct MAP {  
     bool flagIndex;
     unsigned int frameIndex;
 } MAP;
 
-typedef struct LEVEL {      //interior level structure
-    bool isLeafNode;
-    struct PAGETABLE *pageTablePtr;
-    struct LEVEL **nextLevelPtr;
-    struct MAP *map;
-    int depth;
-} LEVEL;
-
 unsigned int LogicalToPage(unsigned int LogicalAddress, unsigned int Mask, unsigned int Shift);
-unsigned int calcBitmask(int start, int length);
+unsigned int createBitMask(int pos, int length);
 void PageInsert(PAGETABLE *PageTable, unsigned int LogicalAddress, unsigned int Frame);
-void PageInsertHELPER(LEVEL *LevelPtr, unsigned int LogicalAddress, unsigned int Frame);
+void PageInsert(LEVEL *LevelPtr, unsigned int LogicalAddress, unsigned int Frame); // Helper method
 MAP *PageLookup(PAGETABLE *PageTable, unsigned int LogicalAddress);
-MAP *PageLookupHELPER(LEVEL *level, unsigned int LogicalAddress);
+MAP *PageLookup(LEVEL *level, unsigned int LogicalAddress); // Helper method
 int createPageTable(PAGETABLE *PageTable, char** num, int position);
-LEVEL * initializeLevel(PAGETABLE *PageTable, LEVEL *level, int depth);
+LEVEL * createLevel(PAGETABLE *PageTable, LEVEL *level, int depth);

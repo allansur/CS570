@@ -79,3 +79,10 @@ Frames allocated: 1430
 Bytes used:  8388692 
 (NOTE:  Bytes used depends on your implementation.)
 
+
+./pagetable -n 20 -o page2frame trace.sample.tr 4 4 12
+./pagetable -n 20 -o offset trace.sample.tr 4 4 12
+./pagetable -n 20 -o logical2physical trace.sample.tr 28
+./pagetable -n 10000 -o bitmasks trace.sample.tr 4 4 12
+./pagetable -n 100000 -o summary trace.sample.tr 20
+./pagetable -n 10000 trace.sample.tr 8 7 4
