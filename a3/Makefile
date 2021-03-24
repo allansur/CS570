@@ -8,12 +8,7 @@ CXX=g++
 
 CXXFLAGS=-std=c++11 -g
 
-pagetable : main.cpp pagetable.o byu_tracereader.o
-	$(CXX) $(CXXFLAGS) -o pagetable $^
-
-pagetable.o : pagetable.h pagetable.cpp
-
-byu_tracereader.o : byutr.h byu_tracereader.c
-
+main: 
+	g++ -std=c++11 -o pagetable main.cpp pagetable.cpp byu_tracereader.c output_mode_helpers.c
 clean :
 	rm *.o pagetable
