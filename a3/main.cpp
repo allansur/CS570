@@ -10,10 +10,20 @@
 #include <string.h>
 #include <map>
 #include "pagetable.h"
-#include "byutr.h"
 #include "output_mode_helpers.h"
 #include <vector>
+#include "byutr.h"
+#include <cmath>
 using namespace std;
+
+unsigned createMask(unsigned int first, unsigned int last)
+{
+   unsigned int start = 0;
+   for (unsigned int i = first; i <= last; i++)
+       start |= 1 << i;
+
+   return start;
+}
 
 int main(int argc, char **argv)
 {
@@ -75,7 +85,6 @@ int main(int argc, char **argv)
         case 'o': /*produce different outputs */
             //optarg contains the output method...
             outputMode = optarg;
-            cout << "mode: " << outputMode << endl;
             if (strcmp(outputMode, "bitmasks") == 0)
             {
                 // report_bitmasks(levelCount, masks);
@@ -113,7 +122,6 @@ int main(int argc, char **argv)
     }
     
     // cout << "bFlag: " << bFlag << endl;
-
     string filename = argv[optind];
     FILE *fp = fopen(filename.c_str(), "r"); 
     p2AddrTr trace_item;  /* Structure with trace information */
@@ -127,7 +135,6 @@ int main(int argc, char **argv)
     int levelCount = argc - (optind + 1);
     pt -> numOfLevels = levelCount;
     int offset = 32 - createPageTable(pt, argv, argc-levelCount);
-
     unsigned int addyCount = 0;
     while (fp) {
          if (nFlag) {
@@ -135,32 +142,43 @@ int main(int argc, char **argv)
                  break;
              }
              if (NextAddress(fp, &trace_item)){
+                 addys.push_back(trace_item.addr);
                  unsigned int addy = (unsigned int) trace_item.addr;
                  if (PageLookup(pt, addy) == NULL) {
                      pt -> misses++;
                      PageInsert(pt, addy, pt-> frameCount);
-                     if (p2FFlag){
-                         // ./pagetable -n 20 -o page2frame trace.sample.tr 4 4 12
-                         unsigned int page = addy;
-                         page >>= offset;
-                         MAP *map = PageLookup(pt, addy);
-                         cout << page << map->frameIndex;
-                     }
-                     if(ofFlag) {
-                         // ./pagetable -n 20 -o offset trace.sample.tr 4 4 12
-                        fprintf(stdout, "%08X -> %08X\n", addy, (addy << (32-offset)));
-                    }
+                     
+                     //OFFSET OUTPUT WORKS NOW
+                    
                  }
                  else {
                  pt -> hits++;
                 }
+                if (p2FFlag){
+                         // ./pagetable -n 20 -o page2frame trace.sample.tr 4 4 12
+                         unsigned int page = addy;
+                         page >>= offset;
+                         MAP *map = PageLookup(pt, addy);
+                         printf("%08X: ", addy);
+                         printf("%X ", page);
+                         printf("-> %X\n", map -> frameIndex);
+
+                     } 
+                if(ofFlag) {
+                         // ./pagetable -n 20 -o offset trace.sample.tr 4 4 12
+                        //our create mask method basically just shifts a 1 in 0 - levelCount * 4 - 1 amount of times to create a mask to and to get the last x amount of bytes in the address as the offset
+                        unsigned int mask = createMask(0, offset - 1);
+                        unsigned int oHolder = addy & mask;
+                        report_logical2offset(addy, oHolder);
+                    }
                 if (l2PFlag) {
                     // ./pagetable -n 20 -o logical2physical trace.sample.tr 28
                     MAP *map = PageLookup(pt, addy);
-                    unsigned int translation = addy;
-                    translation &= ((1 - offset) - 1);
-                    translation += (map -> frameIndex << offset);
-                    cout << "Address: " << addy << ", Physical Translation: " << translation << endl;
+                    int hex = offset / 4;
+                    unsigned int translation = map -> frameIndex * pow(16, hex);
+                    unsigned int mask = createMask(0, offset - 1);
+                    unsigned int oHolder = (addy & mask) + translation;
+                    report_logical2physical(addy, oHolder);
                 } 
              }
              addyCount++;
@@ -168,14 +186,12 @@ int main(int argc, char **argv)
     }
     if(bFlag) {
         // ./pagetable -n 10000 -o bitmasks trace.sample.tr 4 4 12
-        for (int idx=0; idx < pt->numOfLevels; idx++) {
         /* show mask entry and move to next */
-         printf("level %d mask %08X\n", idx, pt->bitMaskArr[idx]);
-        }
+         report_bitmasks(pt -> numOfLevels, pt ->bitMaskArr);
     } else if(rSum) {
         // ./pagetable -n 100000 -o summary trace.sample.tr 20
-        unsigned int page_size = sizeof(pt);
-        unsigned int bytes = 0;
+        unsigned int page_size = sizeof(pt); // ?
+        unsigned int bytes = 0; // ?
         printf("Page size: %d bytes\n", page_size);
         printf("Addresses processed: %d\n", addyCount);
         double hit_percent = (double) pt->hits / addyCount * 100.0;
