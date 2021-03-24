@@ -140,16 +140,22 @@ int main(int argc, char **argv)
                      pt -> misses++;
                      PageInsert(pt, addy, pt-> frameCount);
                      if (p2FFlag){
+                         // ./pagetable -n 20 -o page2frame trace.sample.tr 4 4 12
                          unsigned int page = addy;
                          page >>= offset;
                          MAP *map = PageLookup(pt, addy);
                          cout << page << map->frameIndex;
                      }
+                     if(ofFlag) {
+                         // ./pagetable -n 20 -o offset trace.sample.tr 4 4 12
+                        fprintf(stdout, "%08X -> %08X\n", addy, (addy << (32-offset)));
+                    }
                  }
                  else {
                  pt -> hits++;
                 }
                 if (l2PFlag) {
+                    // ./pagetable -n 20 -o logical2physical trace.sample.tr 28
                     MAP *map = PageLookup(pt, addy);
                     unsigned int translation = addy;
                     translation &= ((1 - offset) - 1);
@@ -160,21 +166,24 @@ int main(int argc, char **argv)
              addyCount++;
          }
     }
-    if (p2FFlag) {
-        //We have to output the page 2 frames here with page # and frame #
-        //  printf("%08X: ", logical_addr);
-        // for (int idx=0; idx < pt->numOfLevels; idx++) {   /* output pages */
-        //  printf("%X ", pages[idx]);
-        //     }
-        //  printf("-> %X\n", frame); /* output frame */
-    } else if(bFlag) {
-        // cout << "Bitmask Arr: " << pt->bitMaskArr[11] << endl;
-        //report_bitmasks(pt->numOfLevels, pt->bitMaskArr);
+    if(bFlag) {
+        // ./pagetable -n 10000 -o bitmasks trace.sample.tr 4 4 12
         for (int idx=0; idx < pt->numOfLevels; idx++) {
         /* show mask entry and move to next */
          printf("level %d mask %08X\n", idx, pt->bitMaskArr[idx]);
         }
-    } 
+    } else if(rSum) {
+        // ./pagetable -n 100000 -o summary trace.sample.tr 20
+        unsigned int page_size = sizeof(pt);
+        unsigned int bytes = 0;
+        printf("Page size: %d bytes\n", page_size);
+        printf("Addresses processed: %d\n", addyCount);
+        double hit_percent = (double) pt->hits / addyCount * 100.0;
+        printf("Hits: %d (%.2f%%), Misses %d (%.2f%%)\n", 
+	    pt->hits, hit_percent, pt->misses, 100 - hit_percent);
+        printf("Frames allocated: %d\n", pt->frameCount);
+        printf("Bytes used:  %d\n", bytes);
+    }
   
 
 //CALCULATE ALL ACCURACIES AND OUTPUT
@@ -183,4 +192,3 @@ int main(int argc, char **argv)
 }
 
 // ./pagetable -n 10000 trace.sample.tr 8 7 4
-// ./pagetable -n 10000 -o bitmasks trace.sample.tr 8 7 4

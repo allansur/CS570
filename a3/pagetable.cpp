@@ -8,8 +8,7 @@ int createPageTable(PAGETABLE *PageTable, char** num, int position)
     PageTable->entryCount = new unsigned int[PageTable->numOfLevels];
 
     int bitsUsed = 0;
-    int i;
-    for (i = 0; i < PageTable->numOfLevels; i++)
+    for (int i = 0; i < PageTable->numOfLevels; i++)
     {
         int levelBits = atoi(num[position]);
         PageTable->shifters[i] = 32 - bitsUsed - levelBits;
