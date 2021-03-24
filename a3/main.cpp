@@ -82,6 +82,7 @@ int main(int argc, char **argv)
             }
             else if (strcmp(outputMode, "logical2physical") == 0)
             {
+                // report_logical2physical(pt->rootPtr->map->frameIndex, offset);
                 l2PFlag = true;
             }
             else if (strcmp(outputMode, "page2frame") == 0)
@@ -118,26 +119,51 @@ int main(int argc, char **argv)
         fprintf(stderr, "Unable to open & read file: %s\n", filename.c_str());
         exit(1);
     } 
-
-  for (int i = 0; i < numberOfAddresses; i++) {
-    // Grabs the next address
-    int bytesread = NextAddress(fp, &trace_item);
-    addys.push_back(trace_item.addr);
-  }
   
     int levelCount = argc - (optind + 1);
     pt -> numOfLevels = levelCount;
-    cout << createPageTable(pt, levelCount) << endl;
-    for (int i = 0; i < addys.size(); i++){
-        PageInsert(pt, addys[i], pt ->frameCount);
+    int offset = 32 - createPageTable(pt, argv, argc-levelCount);
+
+    unsigned int addyCount = 0;
+    while (fp) {
+         if (nFlag) {
+             if(numberOfAddresses <= addyCount){
+                 break;
+             }
+             if (NextAddress(fp, &trace_item)){
+                 unsigned int addy = (unsigned int) trace_item.addr;
+                 if (PageLookup(pt, addy) == NULL) {
+                     pt -> misses++;
+                     PageInsert(pt, addy, pt-> frameCount);
+                     if (p2FFlag){
+                         unsigned int page = addy;
+                         page >>= offset;
+                         MAP *map = PageLookup(pt, addy);
+                         cout << page << map->frameIndex;
+                     }
+                 }
+                 else {
+                 pt -> hits++;
+                }
+                if (l2PFlag) {
+                    MAP *map = PageLookup(pt, addy);
+                    unsigned int translation = addy;
+                    translation &= ((1 - offset) - 1);
+                    translation += (map -> frameIndex << offset);
+                    cout << "Address: " << addy << ", Physical Translation: " << translation << endl;
+                 
+                }
+             }
+             addyCount++;
+             
+         }
     }
-    cout << PageLookup(pt, addys[69]) << endl;
-    cout << PageLookup(pt, addys[0]) << endl;
-    cout << addys[52] << endl;
-    cout << addys[55] << endl;
-    cout << pt->frameCount;
-    
-    
+    if (p2FFlag) {
+        //We have to output the page 2 frames here with page # and frame #
+    }
+
+//CALCULATE ALL ACCURACIES AND OUTPUT
+ fclose(fp);
     return 0;
 }
 
