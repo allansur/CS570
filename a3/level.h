@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
@@ -10,16 +11,21 @@
 #include <map>
 using namespace std;
 
-class LEVEL;
+class PAGETABLE;
 
-class PAGETABLE {
+class LEVEL {
+private:
+    int depth;
+    bool isLeafLevel;
+    PAGETABLE *PageTablePtr;
+    LEVEL **NextLevelPtr;
+    MAP *mapPtr;
 public:
-    unsigned int numOfLevels;
-    unsigned int *bitmaskArr;
-    unsigned int *shifters;
-    unsigned int *entryCount;
+    LEVEL(PAGETABLE *, int, bool);
 
-    PAGETABLE(unsigned int, int *);
+    LEVEL *getSubLevel(int);
+
+    MAP *PageLookup(int);
 
     bool PageInsert(unsigned int, unsigned int);
 
@@ -27,6 +33,4 @@ public:
 
     int sizeTotal();
 
-private:
-    LEVEL *rootPtr;
 };
