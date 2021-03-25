@@ -1,14 +1,19 @@
-/* 
-Names: Allan Sur, Jason Songvilay
-RedIDs: 821444631, 821071661
-Edoras IDs: cssc3455, cssc3454
-Course: CS530-03-Spring2021
-Assignment 3: Part II
-*/
 #include <stdio.h>
-#include "output_mode_helpers.h"
-#include "byutr.h"
+#include <stdlib.h>
+#include <pthread.h>
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <string.h>
+#include <map>
 #include "pagetable.h"
+#include "output_mode_helpers.h"
+#include <vector>
+#include "byutr.h"
+#include <cmath>
 using namespace std;
 
 //main helper function to get the amount of bits we want in a mask
@@ -43,7 +48,7 @@ int main(int argc, char **argv)
     bool nFlag = false, bFlag = false, l2PFlag = false, p2FFlag = false, ofFlag = false, rSum = false, outputFlag = false;
 
     //While loop to grab our parameters and requirements from the user as given by the professor in pseudocode
-    while ((Option = getopt(argc, argv, "n::o::")) != -1)
+    while ((Option = getopt(argc, argv, "n:o:")) != -1)
     {
         //Check if either (n || o) || (n && o) is input into the command line
         switch (Option)
@@ -181,12 +186,6 @@ int main(int argc, char **argv)
             }
             //increment aaddress count to make sure we have not exceeded given -n number of addresses
             addyCount++;
-            if (!NextAddress(fp, &trace_item)){
-                if (!ofFlag && !nFlag){
-                    rSum = true;
-                }
-                break;
-            }
     }
     // if -n bitmasks is passed in on command line
     if (bFlag)
@@ -199,7 +198,7 @@ int main(int argc, char **argv)
     {
             //display size in bytes of pagetable, allocation of arrays and structs
             //display hits, misses, percentage, number of addresses processed, and frames allocated
-            unsigned int page_size = sizeof(pt);
+            unsigned int page_size = pow(2, sizeof(pt));
             unsigned int bytes = sizeof(pt) + sizeof(lv) + sizeof(addys);
             printf("Page size: %d bytes\n", page_size);
             printf("Addresses processed: %d\n", addyCount);
