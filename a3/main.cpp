@@ -1,19 +1,7 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <pthread.h>
-#include <string>
-#include <iostream>
-#include <fstream>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <string.h>
-#include <map>
-#include "pagetable.h"
 #include "output_mode_helpers.h"
-#include <vector>
 #include "byutr.h"
-#include <cmath>
+#include "pagetable.h"
 using namespace std;
 
 //main helper function to get the amount of bits we want in a mask

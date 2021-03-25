@@ -1,13 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <pthread.h>
 #include <string>
 #include <iostream>
 #include <fstream>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <cmath>
 #include <map>
+#include <vector>
 using namespace std;
 
 typedef struct PAGETABLE {
