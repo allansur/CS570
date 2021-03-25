@@ -8,6 +8,23 @@ Assignment 3: Part II
 #include "pagetable.h"
 using namespace std;
 
+//Logical to page just ANDs our bitmask at the respective level and the logical address to get our page # and then we shift it the correct amount of bits for that level
+unsigned int LogicalToPage(unsigned int LogicalAddress, unsigned int Mask, unsigned int Shift)
+{
+    return (LogicalAddress & Mask) >> Shift;
+}
+
+//Function to create our bitmask for the given level which takes in our offset + that level index (1-n)
+unsigned int createBitMask(int pos, int length)
+{
+    //Basically calculating 2^(length) - 1
+    unsigned int mask = (1 << length) - 1;
+    //Shift mask left and set equal to the position - length
+    mask <<= (pos - length);
+    //return mask for that level index
+    return mask;
+}
+
 int createPageTable(PAGETABLE *PageTable, char **num, int index)
 {
     //Initialize all of our struct PAGETABEL's arrays of # of shifted bits, the array of bitmasks per lvl and the amount of entires per lvl
@@ -43,21 +60,39 @@ int createPageTable(PAGETABLE *PageTable, char **num, int index)
     return numOfBits;
 }
 
-//Logical to page just ANDs our bitmask at the respective level and the logical address to get our page # and then we shift it the correct amount of bits for that level
-unsigned int LogicalToPage(unsigned int LogicalAddress, unsigned int Mask, unsigned int Shift)
+//Instantiation of our level struct for our pagetable
+LEVEL *createLevel(PAGETABLE *PageTable, LEVEL *level, int levelDepth)
 {
-    return (LogicalAddress & Mask) >> Shift;
-}
-
-//Function to create our bitmask for the given level which takes in our offset + that level index (1-n)
-unsigned int createBitMask(int pos, int length)
-{
-    //Basically calculating 2^(length) - 1
-    unsigned int mask = (1 << length) - 1;
-    //Shift mask left and set equal to the position - length
-    mask <<= (pos - length);
-    //return mask for that level index
-    return mask;
+    //Allocate memory and fill with 0's for the given size of that level
+    level = (LEVEL *)calloc(1, sizeof(LEVEL));
+    //Set out depth and pagetableptr attributes for the struct to given variables
+    level->depth = levelDepth;
+    level->pageTablePtr = PageTable;
+    //check that if we are on the last level
+    if (PageTable->numOfLevels <= levelDepth + 1)
+    {
+        //if we are, we can set this level to be true that it is a leaf node
+        level->isLeafNode = true;
+    }
+    //If this level is a leafNode enter
+    if (level->isLeafNode)
+    {
+        //Set our map pointer = a newly created map pointer allocated of size MAP with the correct entry count at this level using calloc to fill with 0s
+        level->map = (MAP *)calloc(PageTable->entryCount[levelDepth], sizeof(MAP));
+        //For the amount fo entries in this level at this depth, we wanat to go ahead and insert all empty bits into the map to show that it's empty right now
+        for (int i = 0; i < PageTable->entryCount[levelDepth]; i++)
+        {
+            level->map[i].flagIndex = false;
+        }
+    }
+    //If this is not a leaf node enter
+    else
+    {
+        //We set our next level ptr for this level to be a newly instantiaated double pointer with allocated size of the level pointer and the correct amount of entries for this level at thsi depth from our page table.
+        level->nextLevelPtr = (LEVEL **)calloc(PageTable->entryCount[levelDepth], sizeof(LEVEL *));
+    }
+    //return this level
+    return level;
 }
 
 //Page insertion function for the PAGETABLE struct
@@ -130,37 +165,3 @@ MAP *PageLookup(LEVEL *level, unsigned int LogicalAddress)
     }
 }
 
-//Instantiation of our level struct for our pagetable
-LEVEL *createLevel(PAGETABLE *PageTable, LEVEL *level, int levelDepth)
-{
-    //Allocate memory and fill with 0's for the given size of that level
-    level = (LEVEL *)calloc(1, sizeof(LEVEL));
-    //Set out depth and pagetableptr attributes for the struct to given variables
-    level->depth = levelDepth;
-    level->pageTablePtr = PageTable;
-    //check that if we are on the last level
-    if (PageTable->numOfLevels <= levelDepth + 1)
-    {
-        //if we are, we can set this level to be true that it is a leaf node
-        level->isLeafNode = true;
-    }
-    //If this level is a leafNode enter
-    if (level->isLeafNode)
-    {
-        //Set our map pointer = a newly created map pointer allocated of size MAP with the correct entry count at this level using calloc to fill with 0s
-        level->map = (MAP *)calloc(PageTable->entryCount[levelDepth], sizeof(MAP));
-        //For the amount fo entries in this level at this depth, we wanat to go ahead and insert all empty bits into the map to show that it's empty right now
-        for (int i = 0; i < PageTable->entryCount[levelDepth]; i++)
-        {
-            level->map[i].flagIndex = false;
-        }
-    }
-    //If this is not a leaf node enter
-    else
-    {
-        //We set our next level ptr for this level to be a newly instantiaated double pointer with allocated size of the level pointer and the correct amount of entries for this level at thsi depth from our page table.
-        level->nextLevelPtr = (LEVEL **)calloc(PageTable->entryCount[levelDepth], sizeof(LEVEL *));
-    }
-    //return this level
-    return level;
-}
