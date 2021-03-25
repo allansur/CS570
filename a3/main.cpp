@@ -217,8 +217,6 @@ int main(int argc, char **argv)
     }
     //Finish reading addresses, close file
     fclose(fp);
+    //end program successfully
     return 0;
 }
-
-// ./pagetable -n 10000 trace.sample.tr 8 7 4
-// ./pagetable trace.sample.tr 8 12
