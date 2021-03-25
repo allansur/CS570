@@ -45,14 +45,17 @@ int main(int argc, char **argv)
     //Initialize a vector of all the addresses that are going to be pushed in
     vector<unsigned int> addys;
     //Set flags for all input parameters to false
-    bool nFlag = false, bFlag = false, l2PFlag = false, p2FFlag = false, ofFlag = false, rSum = false;
+    bool nFlag = false, bFlag = false, l2PFlag = false, p2FFlag = false, ofFlag = false, rSum = false, outputFlag = false;
 
     //While loop to grab our parameters and requirements from the user as given by the professor in pseudocode
-    while ((Option = getopt(argc, argv, "n:o:")) != -1)
+    while ((Option = getopt(argc, argv, "n::o::")) != -1)
     {
         //Check if either (n || o) || (n && o) is input into the command line
         switch (Option)
         {
+            if (optarg) {
+                rSum = true;
+            }
         case 'n': //Number of addys to process
             //optarg will contain the string folliwng -n
             //Process appropriately (e.g. convert to integer atoi(optarg))
@@ -84,6 +87,8 @@ int main(int argc, char **argv)
                 rSum = true;
             }
             break;
+
+
         default:
             //print something about the usage and die...
             cout << "Does not exist" << endl;
@@ -124,9 +129,9 @@ int main(int argc, char **argv)
             {
                 break;
             }
+        }
             //Check that there is another address given to us
-            if (NextAddress(fp, &trace_item))
-            {
+        if (NextAddress(fp, &trace_item)){
                 //Append the address into our array addys
                 addys.push_back(trace_item.addr);
                 unsigned int addy = (unsigned int)trace_item.addr;
@@ -181,7 +186,12 @@ int main(int argc, char **argv)
             }
             //increment aaddress count to make sure we have not exceeded given -n number of addresses
             addyCount++;
-        }
+            if (!NextAddress(fp, &trace_item)){
+                if (!ofFlag && !nFlag){
+                    rSum = true;
+                }
+                break;
+            }
     }
     // if -n bitmasks is passed in on command line
     if (bFlag)
@@ -192,17 +202,18 @@ int main(int argc, char **argv)
     // if -n summary is passed in on command line
     else if (rSum)
     {
-        //display size in bytes of pagetable, allocation of arrays and structs
-        //display hits, misses, percentage, number of addresses processed, and frames allocated
-        unsigned int page_size = sizeof(pt);
-        unsigned int bytes = sizeof(pt) + sizeof(lv) + sizeof(addys);
-        printf("Page size: %d bytes\n", page_size);
-        printf("Addresses processed: %d\n", addyCount);
-        double hit_percent = (double)pt->hits / addyCount * 100.0;
-        printf("Hits: %d (%.2f%%), Misses %d (%.2f%%)\n",
-               pt->hits, hit_percent, pt->misses, 100 - hit_percent);
-        printf("Frames allocated: %d\n", pt->frameCount);
-        printf("Bytes used:  %d\n", bytes);
+            //display size in bytes of pagetable, allocation of arrays and structs
+            //display hits, misses, percentage, number of addresses processed, and frames allocated
+            unsigned int page_size = sizeof(pt);
+            unsigned int bytes = sizeof(pt) + sizeof(lv) + sizeof(addys);
+            printf("Page size: %d bytes\n", page_size);
+            printf("Addresses processed: %d\n", addyCount);
+            double hit_percent = (double)pt->hits / addyCount * 100.0;
+            printf("Hits: %d (%.2f%%), Misses %d (%.2f%%)\n",
+                pt->hits, hit_percent, pt->misses, 100 - hit_percent);
+            printf("Frames allocated: %d\n", pt->frameCount);
+            printf("Bytes used:  %d\n", bytes);
+        
     }
     //Finish reading addresses, close file
     fclose(fp);
