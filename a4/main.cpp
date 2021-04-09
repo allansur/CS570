@@ -18,6 +18,7 @@ int main(int argc, char **argv)
 {
     int Option;
     int idx;
+    int numberOfCandies;
 
     while ((Option = getopt(argc, argv, "E:L:f:e")) != -1)
     {
@@ -29,9 +30,13 @@ int main(int argc, char **argv)
                 // rSum = true;
             }
         case 'E':
+             numberOfCandies = atoi(optarg);
         case 'L':
+             numberOfCandies = atoi(optarg); 
         case 'f':
+             numberOfCandies = atoi(optarg);
         case 'e':
+             numberOfCandies = atoi(optarg);
         default:
             //print something about the usage and die...
             cout << "Does not exist" << endl;

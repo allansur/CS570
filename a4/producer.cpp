@@ -14,14 +14,24 @@ typedef enum
 typedef struct
 {
     char *Name;          /* Human readable name of operation */
-    int CFBEaten;
-    int EESEaten;
+    int CFBmade;
+    int EESmade;
+    int total;
 
     sem_t *MutexPtr; /* pointer to critical region semaphore */
     int *ValuePtr; /* pointer to shared data */
-} CONSUMER;
+} PRODUCER;
 
-void *drake(void *parameter)
+void *escargot(void *parameter)
 {
-    CONSUMER *drake = (CONSUMER *)parameter;
+    PRODUCER *ees = (PRODUCER *)parameter;
+    while(((ees->CFBmade) + (ees->EESmade)) < 100) {
+        if(ees->CFBmade < 3) {
+            sem_wait(ees->MutexPtr);
+            ees->EESmade++;
+        }
+        // initial crunchy frog bites
+        sem_post(ees->MutexPtr);
+    }
+    // make escargot things
 }
