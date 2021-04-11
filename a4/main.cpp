@@ -20,20 +20,20 @@ sem_t semFull;
 int main(int argc, char **argv)
 {
     
-    int Option;
-    int idx;
-    int numberOfCandies;
+    // int Option;
+    // int idx;
+    // int numberOfCandies;
    
-    pthread_mutex_t mutexBuffer;
-    pthread_t threads[2];
+    // pthread_mutex_t mutexBuffer;
+    // pthread_t threads[2];
 
-    BELT *b = new BELT();
-    b -> curr_CFB = 0;
-    b -> curr_EES = 0;
-    b -> total = 0;
+    // BELT *b = new BELT();
+    // b -> curr_CFB = 0;
+    // b -> curr_EES = 0;
+    // b -> total = 0;
 
-    sem_init(&semEmpty, 0, 10);
-    sem_init(&semFull, 0, 0);
+    // sem_init(&semEmpty, 0, 10);
+    // sem_init(&semFull, 0, 0);
 
     for (int i = 0; i < 2; i++){
         if (pthread_create(&th[i], NULL, &drake, b) != 0) {
@@ -46,9 +46,9 @@ int main(int argc, char **argv)
         }
     }
 
-    sem_destroy(&semEmpty);
-    sem_destroy(&semFull);
-    pthread_mutex_destroy(&mutexBuffer);
+    // sem_destroy(&semEmpty);
+    // sem_destroy(&semFull);
+    // pthread_mutex_destroy(&mutexBuffer);
 
     // while ((Option = getopt(argc, argv, "E:L:f:e")) != -1)
     // {
