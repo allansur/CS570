@@ -1,6 +1,19 @@
 #ifndef PRODUCTION_H
 #define PRODUCTION_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include "semaphore.h"
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <string.h>
+#include <time.h>
+#include <vector>
 /*
  * Arrays with producer and consumer names
  * These can be indexed with the enumerated types below

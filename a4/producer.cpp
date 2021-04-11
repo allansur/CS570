@@ -1,5 +1,6 @@
 #include "semaphore.h"
 #include "production.h"
+#include "belt.h"
 
 #define INCREMENT_TIMES_DEFAULT 50
 #define DECREMENT_TIMES_DEFAULT 50
@@ -17,21 +18,17 @@ typedef struct
     int CFBmade;
     int EESmade;
     int total;
-
-    sem_t *MutexPtr; /* pointer to critical region semaphore */
     int *ValuePtr; /* pointer to shared data */
 } PRODUCER;
 
-void *escargot(void *parameter)
+void *escargot(void *parameter) // "b"
 {
+    BELT *belt = (BELT*) parameter;
     PRODUCER *ees = (PRODUCER *)parameter;
-    while(((ees->CFBmade) + (ees->EESmade)) < 100) {
-        if(ees->CFBmade < 3) {
-            sem_wait(ees->MutexPtr);
-            ees->EESmade++;
-        }
-        // initial crunchy frog bites
-        sem_post(ees->MutexPtr);
+    while(belt -> total < 100) {
+        belt ->buffer.push_back(1);
+        cout << belt->buffer.size();
+        // buffer[count] = x;
     }
     // make escargot things
 }
