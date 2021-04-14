@@ -5,13 +5,13 @@
 # Assignmt 2: Part II
 
 CXX=g++
+CXXFLAGS=-std=c++11 -g -pthread 
 
-CXXFLAGS=-std=c++11 -g -pthread
 
-main : main.o 
-	$(CXX) $(CXXFLAGS) -o main $^
+semaphore_demo : semaphore_demo.o 
+	gcc -o semaphore_demo semaphore_demo.c -lpthread -lrt
 
-main.o : main.c
+semaphore_demo.o : semaphore_demo.c
 
 clean :
 	rm *.o wordcount
