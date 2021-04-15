@@ -32,7 +32,7 @@ struct FACTORY
 
     int produced; // total candies produced so far
     int consumed; // total candies consumed so far
-    int production_limit; // 100 candies
+    int limit; // 100 candies
 
     // flag variables
     bool producing;
