@@ -63,17 +63,7 @@ int main(int argc, char ** argv)
         Do not use global factoryiables to communicate information to your threads.
         Pass information through data structures.
     */
-    // initialize gloval factoryiables, these factoryiables do not pass information to threads
-    produced = 0;
-    frog_total = 0;
-    escar_total = 0;
-
-    L_frog_total = 0;
-    L_escar_total = 0;
-
-    E_frog_total = 0;
-    E_escar_total = 0;
-
+ 
     /* these factoryiables are not global, so they will be used for threads */
     // FACTORYiable structure for threads
     struct FACTORY * factory = (FACTORY *)malloc(sizeof(struct FACTORY));
@@ -83,7 +73,7 @@ int main(int argc, char ** argv)
 
     factory->produced = 0;
     factory->consumed = 0;
-    factory->production_limit = 100;			    // produce 100 candies
+    factory->limit = 100;			    // produce 100 candies
 	
     // bool factoryiables
     factory->ethel = E;

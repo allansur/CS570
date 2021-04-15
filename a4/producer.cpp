@@ -27,7 +27,7 @@ void * producer(void * ptr)
     sem_post(&factory->type); // semaphore up
 
     // while total produced is less than limit 100
-    while(factory->produced < factory->production_limit)
+    while(factory->produced < factory->limit)
     {
         // add candy type to belt
 		sem_wait(&factory->belt_access);
@@ -52,7 +52,7 @@ void * producer(void * ptr)
                 
             //printf("pB2\n");
             // print bealt update
-            produce(candy, &factory->belt);// Add candy to belt
+            produce((ProductType) candy, &factory->belt);// Add candy to belt
             printupdate(factory->belt);
             printf("added %s.\n", candy ? "Escargot sucker": "crunchy frog bite");
 

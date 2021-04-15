@@ -1,5 +1,5 @@
-/*
- * CS570, spring 2020
+
+
 #ifndef PRODUCER_H_INCLUDED
 #define PRODUCER_H_INCLUDED
 
