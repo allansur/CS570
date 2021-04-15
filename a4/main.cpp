@@ -1,10 +1,8 @@
 
 #include "producer.h"
 #include "consumer.h"
-
-#include <unistd.h>     // needed for getopt and optind
-#include <getopt.h>     // for linux compilation
-
+#include <unistd.h>
+#include <getopt.h>
 /* time conversions */
 #define NSPERMS     1000000 /* million ns/ms */
 #define MSPERSEC    1000  /* thousand ms/s */

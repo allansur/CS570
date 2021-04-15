@@ -1,6 +1,12 @@
 
 #include "consumer.h"
 #include <string>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <iostream>
+using namespace std;
 
 void * consumer(void * ptr)
 {
@@ -48,9 +54,7 @@ void * consumer(void * ptr)
             string c = worker ? "Ethel" : "Lucy";
             string candies = worker ? "Escargot Suckers" : " Crunchy FrogBites";
 
-            printf("%s consumed %s.\n",
-                consumer ? "Ethel": "Lucy",
-                candy ? "escargot sucker": "crunchy frog bite");
+            cout << c << " produced " << candies << "\n";
 
 		sem_post(&factory->belt_access);
 

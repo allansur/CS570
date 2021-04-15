@@ -9,11 +9,23 @@
 #include <time.h>       // needed to use nanosleep()
 #include <pthread.h>    // needed to use pthreads
 #include <semaphore.h>  // needed to use semaphores
-#include "production.h"
 
 
 
 // this enables us to say Link instead of struct node *
+
+typedef enum Products {
+  FrogBite = 0,   // Crunch frog bites, my favorite!
+  Escargot = 1,  // Escargot suckers, slimy yet satisfying...
+  ProductTypeN = 2,   // Number of products
+} ProductType;
+
+typedef enum Consumers {
+  Lucy = 0,
+  Ethel = 1,
+  ConsumerTypeN = 2,   // Number of consumers
+} ConsumerType;
+
 typedef struct node * Link; // Link is pointer type
 
 struct node{
